@@ -144,4 +144,21 @@ object OdinActions {
     val data = yaml.load(input).asInstanceOf[java.util.Collection[Any]]
     Taxonomy(data)
   }
+
+  def deleteDuplicates(mentions: Seq[Mention], state: State = new State()): Seq[Mention] = {
+    var duplicates = for {
+      m <- mentions
+      m1 <- mentions
+      if  (mentions.indexOf(m) != mentions.indexOf(m1) & m.tokenInterval == m1.tokenInterval)
+    } yield m
+    duplicates.foreach(m=> println("duplicate " + m.text))
+    var filteredMentions = mentions.filter(m => !duplicates.contains(m))
+
+    filteredMentions.foreach(m=> println("filtered " + m.text))
+    println("duplicate mentions length " + duplicates.length)
+    var distinctDup = duplicates.filter(m => m.label.contains("Variable") | m.label.contains("Value") )
+    println("duplicate mentions set " + distinctDup.length)
+    distinctDup.foreach(m=> println("duplicate distinct " + m.text))
+    filteredMentions ++ distinctDup
+  }
 }

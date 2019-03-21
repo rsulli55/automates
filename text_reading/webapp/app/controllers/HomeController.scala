@@ -1,11 +1,10 @@
 package controllers
 
 import javax.inject._
-import org.clulab.aske.automates.OdinEngine
+import org.clulab.aske.automates.{OdinActions, OdinEngine}
 import org.clulab.odin.{Attachment, EventMention, Mention, RelationMention, TextBoundMention}
 import org.clulab.processors.{Document, Sentence}
 import org.clulab.utils.DisplayUtils
-
 import play.api.mvc._
 import play.api.libs.json._
 
@@ -55,7 +54,8 @@ class HomeController @Inject()(cc: ControllerComponents) extends AbstractControl
 
     println(s"DOC : ${doc}")
     // extract mentions from annotated document
-    val mentions = ieSystem.extractFrom(doc).sortBy(m => (m.sentence, m.getClass.getSimpleName))
+    val filteredMentions = OdinActions.deleteDuplicates(ieSystem.extractFrom(doc)).toVector
+    val mentions = filteredMentions.sortBy(m => (m.sentence, m.getClass.getSimpleName))
 
     println(s"Done extracting the mentions ... ")
     println(s"They are : ${mentions.map(m => m.text).mkString(",\t")}")

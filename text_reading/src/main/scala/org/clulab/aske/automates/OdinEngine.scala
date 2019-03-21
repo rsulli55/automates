@@ -13,6 +13,7 @@ import ai.lum.common.ConfigUtils._
 import org.clulab.aske.automates.actions.ExpansionHandler
 
 
+
 class OdinEngine(
   val proc: Processor,
   masterRulesPath: String,
@@ -67,7 +68,7 @@ class OdinEngine(
   // MAIN PIPELINE METHOD
   def extractFromText(text: String, keepText: Boolean = false, filename: Option[String]): Seq[Mention] = {
     val doc = annotate(text, keepText, filename)   // CTM: processors runs (sentence splitting, tokenization, POS, dependency parse, NER, chunking)
-    val odinMentions = extractFrom(doc)  // CTM: runs the Odin grammar
+    val odinMentions = OdinActions.deleteDuplicates(extractFrom(doc))  //extractFrom(doc)  // CTM: runs the Odin grammar
     //println(s"\nodinMentions() -- entities : \n\t${odinMentions.map(m => m.text).sorted.mkString("\n\t")}")
 
     odinMentions  // CTM: collection of mentions ; to be converted to some form (json)
