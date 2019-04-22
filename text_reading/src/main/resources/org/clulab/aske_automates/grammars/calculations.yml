@@ -8,10 +8,10 @@ rules:
     label: Calculation
     priority: ${priority}
     type: dependency
-    example: "The average soil water potential ( ̄S , J kg−1) is calculated based on a representative root length fraction for each soil layer (fr,j):"
+    example: "The average soil water potential ( S , J kg−1) is calculated based on a representative root length fraction for each soil layer (fr,j):"
     #action: variableArguments
     pattern: |
       trigger = [lemma = /calculate/]
       variable: Variable = nsubjpass appos
-      conceptsInvolved: Concept+ = advcl_based_on
+      conceptInvolved: Concept+ = advcl_based_on
 

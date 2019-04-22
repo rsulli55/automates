@@ -120,12 +120,14 @@ object OdinEngine {
   val PARAMETER_SETTING_LABEL: String = "ParameterSetting"
   val VALUE_LABEL: String = "Value"
   val VARIABLE_LABEL: String = "Variable"
+  val CALCULATION_LABEL: String = "Calculation"
   // Mention argument types
   val VARIABLE_ARG: String = "variable"
   val VALUE_LEAST_ARG: String = "ValueLeast"
   val VALUE_MOST_ARG: String = "ValueMost"
   val DEFINITION_ARG: String = "definition"
   val VALUE_ARG: String = "value"
+  val CONCEPT_INVOLVED_ARG: String = "conceptInvolved"
 
   val logger = LoggerFactory.getLogger(this.getClass())
   // Used by LexiconNER

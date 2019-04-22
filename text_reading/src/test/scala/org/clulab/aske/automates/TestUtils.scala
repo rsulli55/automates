@@ -71,6 +71,10 @@ object TestUtils {
       testThreeArgEvent(mentions, INTERVAL_PARAMETER_SETTING_LABEL, VARIABLE_ARG, VALUE_LEAST_ARG, VALUE_MOST_ARG, desired)
     }
 
+    def testCalculationEvent(mentions: Seq[Mention], desired: Seq[(String, Seq[String])]): Unit = {
+      testBinaryEvent(mentions, CALCULATION_LABEL, VARIABLE_ARG, CONCEPT_INVOLVED_ARG, desired)
+    }
+
     // General Purpose
 
     def testTextBoundMention(mentions: Seq[Mention], eventType: String, desired: Seq[String]): Unit = {
