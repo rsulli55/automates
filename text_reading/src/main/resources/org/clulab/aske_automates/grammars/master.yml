@@ -19,11 +19,15 @@ rules:
 
   - import: "org/clulab/aske_automates/grammars/parameterSettings.yml"
     vars:
-      priority: 4 # fixme -- likely not the # you want
+      priority: 4
 
   - import: "org/clulab/aske_automates/grammars/units.yml"
     vars:
-      priority: 5 # fixme -- likely not the # you want
+      priority: 5
+
+  - import: "org/clulab/aske_automates/grammars/calculations.yml"
+    vars:
+      priority: 5 #todo: revisit priority
 
 
   - import: "org/clulab/aske_automates/grammars/template.yml"
