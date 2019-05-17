@@ -2,7 +2,7 @@ package org.clulab.aske.automates
 
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
-import org.clulab.odin.{ExtractorEngine, Mention, State}
+import org.clulab.odin._
 import org.clulab.processors.{Document, Processor, Sentence}
 import org.clulab.processors.fastnlp.FastNLPProcessor
 import org.clulab.aske.automates.entities.{EntityFinder, GrobidEntityFinder, RuleBasedEntityFinder, StringMatchEntityFinder}
@@ -75,14 +75,32 @@ class OdinEngine(
     // println(s"In extractFrom() -- res : ${initialState.allMentions.map(m => m.text).mkString(",\t")}")
 
     // Run the main extraction engine, pre-populated with the initial state
-    val events =  engine.extractFrom(doc, initialState).toVector
+    var events =  engine.extractFrom(doc, initialState).toVector
     //println(s"In extractFrom() -- res : ${res.map(m => m.text).mkString(",\t")}")
+    events.toVector.foreach(m => if (m.text matches "it") println(s"ordered mention ${m.text} ${m.sentence} ${ extractFromText(doc.sentences(m.sentence - 1).getSentenceText, true, Option("1")).filter(_ matches "EventMention").last.text}" + "\n"))
+
+    for (e <- events if (e.text matches "it")) {
+      val newArgs = e.arguments + ("variable" -> extractFromText(doc.sentences(e.sentence - 1).getSentenceText, true, Option("1")).filter(_ matches "Variable").tail)
+      val newMention = copyWithArgs(e, newArgs)
+      events = events :+ newMention
+    }
+
 
     // todo: some appropriate version of "keepMostComplete"
     loadableAttributes.actions.keepLongest(events).toVector
   }
 
   // ---------- Helper Methods -----------
+
+
+  def copyWithArgs(orig: Mention, newArgs: Map[String, Seq[Mention]]): Mention = {
+    orig match {
+      case tb: TextBoundMention => ???
+      case rm: RelationMention => rm.copy(arguments = newArgs)
+      case em: EventMention => em.copy(arguments = newArgs)
+      case _ => ???
+    }
+  }
 
   // Annotate the text using a Processor and then populate lexicon labels
   def annotate(text: String, keepText: Boolean = false, filename: Option[String]= None): Document = {
@@ -95,6 +113,8 @@ class OdinEngine(
     doc.id = filename
     doc
   }
+
+
 
   // Add tags to flag tokens that are found in the provided lexicons/gazetteers
   protected def addLexiconNER(s: Sentence) = {
