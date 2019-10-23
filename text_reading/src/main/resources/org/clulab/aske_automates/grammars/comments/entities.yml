@@ -11,7 +11,8 @@ rules:
     priority: 1
     type: token
     example: "E0 is calculated as the product of Kcd and ETpm."
-    action: looksLikeAVariable
+    #action: looksLikeAVariable #we will not run the action here to make sure we do not exclude any actual variable from the comments
+    #there is a downstream component in the aligner that should help us get rid of false positives
     pattern: |
       ^[chunk="B-NP" & !tag="CD"]
 

@@ -9,8 +9,8 @@ rules:
     priority: ${priority}
     type: token
     example: "EEQ Equilibrium evaporation (mm/d)"
-#    action: looksLikeAVariable #don't use this action here---the illegal "vars" should have been
-    #filtered out in the entity rule
+#    action: looksLikeAVariable #we will not run the action here to make sure we do not exclude any actual variable from the comments
+    #there is a downstream component in the aligner that should help us get rid of false positives
     pattern: |
        @variable:Variable (?<definition> [word = /.*/ & !tag="-LRB-"]+)
 
