@@ -160,7 +160,7 @@ object ExtractAndAlign {
 
     // Align the comment definitions to the GrFN variables
     val numAlignments = config[Int]("apps.numAlignments")
-    val commentDefinitionMentions = commentMentions.seq.filter(_ matches "Definition")
+    val commentDefinitionMentions = commentMentions.seq.filter(_ matches "Definition")//.filter(m => variableShortNames.contains(m.arguments("variable").head.text)) #fixme: this commented out filter gets rid of some nice comment-text alignments bc some of the variables in comment blocks don't appear in the code itself in that exact form, e.g. I vs. I0
 //    println("length "+ commentDefinitionMentions.length)
 
 
