@@ -3,6 +3,7 @@ import org.clulab.serialization.json._
 import java.io.File
 import java.io.FileWriter
 import java.io.BufferedWriter
+import org.clulab.processors.fastnlp.FastNLPProcessor
 
 import org.clulab.processors.corenlp.CoreNLPProcessor
 import ai.lum.common.ConfigUtils._
@@ -44,7 +45,7 @@ object ExtractDoc extends App {
   val exportAs: List[String] = config[List[String]]("apps.exportAs")
   val files = FileUtils.findFiles(inputDir, dataLoader.extension)
   val reader = OdinEngine.fromConfig(config[Config]("TextEngine"))
-  val proc = new CoreNLPProcessor()
+  val proc = new FastNLPProcessor()
   val serializer = new DocumentSerializer
   val exporter = new JSONDocExporter()
 
