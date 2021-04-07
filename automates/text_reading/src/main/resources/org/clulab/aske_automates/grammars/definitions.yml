@@ -72,9 +72,9 @@ rules:
     action: ${action}
     pattern: |
       (?<= [word = /a|the|,/])? (?<definition> [word = /.*/ & tag = "NN" & !entity = "B-GreekLetter"]{1,5}) @variable:Variable (?! [chunk = I-NP])
-#      |
+      |
+      (?<= [word = /a|the|,/])? (?<definition> [word = /.*/ & tag = "NN" & !entity = "B-GreekLetter"]{1,5}) @variable:Varqiable (?! [word = "("])
 #      (?<definition> [word = /.*/]) (?<variable> [entity = "B-GreekLetter"])
-
 
   - name: var_stands_for_def
     label: Definition
