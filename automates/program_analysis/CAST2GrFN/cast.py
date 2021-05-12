@@ -33,6 +33,7 @@ from automates.program_analysis.CAST2GrFN.model.cast import (
 from automates.program_analysis.CAST2GrFN.visitors import (
     CASTToAIRVisitor,
 )
+from automates.model_assembly.air import AutoMATES_IR
 from automates.model_assembly.networks import GroundedFunctionNetwork
 from automates.model_assembly.structures import (
     GenericContainer,
@@ -124,13 +125,20 @@ class CAST(object):
                     V[in_var] = VariableDefinition.from_identifier(in_var)
             C[new_container.identifier] = new_container
 
-        grfn = GroundedFunctionNetwork.from_AIR(
-            GenericIdentifier.from_str("@container::initial::@global::exampleFunction"),
+        # TODO: fix this to send objects and metadata
+        #       (and documentation as a form of metadata)
+        air = AutoMATES_IR(
+            GenericIdentifier.from_str(
+                "@container::initial::@global::exampleFunction"
+            ),
             C,
             V,
             T,
             [],
+            [],
+            [],
         )
+        grfn = GroundedFunctionNetwork.from_AIR(air)
         return grfn
 
     def write_cast_object(self, cast_value):
@@ -205,6 +213,20 @@ class CAST(object):
         """
         nodes = cls.parse_cast_json(json_data["nodes"])
         return cls(nodes)
+
+    @classmethod
+    def from_json_file(cls, json_filepath):
+        """
+        Loads json CAST data from a file and returns the created CAST object
+
+        Args:
+            json_filepath: string of a full filepath to a JSON file
+                           representing a CAST with a `nodes` field
+
+        Returns:
+            CAST: The parsed CAST object.
+        """
+        return cls.from_json_data(json.load(open(json_filepath, "r")))
 
     @classmethod
     def from_json_str(cls, json_str):

@@ -6,6 +6,7 @@ import networkx as nx
 
 from automates.model_assembly.interpreter import ImperativeInterpreter
 from automates.model_assembly.networks import GroundedFunctionNetwork
+from automates.model_assembly.air import AutoMATES_IR
 from automates.model_assembly.structures import GenericIdentifier
 
 
@@ -30,10 +31,17 @@ def test_pet_files():
         ITP = ImperativeInterpreter.from_src_file(filepath)
         con_id = GenericIdentifier.from_str(con_name)
 
-        G = GroundedFunctionNetwork.from_AIR(
-            con_id, ITP.containers, ITP.variables, ITP.types, []
+        AIR = AutoMATES_IR(
+            con_id,
+            ITP.containers,
+            ITP.variables,
+            ITP.types,
+            [],
+            ITP.documentation,
+            [],
         )
 
+        G = GroundedFunctionNetwork.from_AIR(AIR)
         A = G.to_AGraph()
         A.draw(outfile, prog="dot")
         return G
@@ -49,21 +57,42 @@ def test_pet_files():
     assert len(G.outputs) == 1
 
     values = {
-        "doy": np.array([20.0], dtype=np.float32),
-        "meevp": np.array(["A"], dtype=np.str),
-        "msalb": np.array([0.5], dtype=np.float32),
-        "srad": np.array([15.0], dtype=np.float32),
-        "tmax": np.array([10.0], dtype=np.float32),
-        "tmin": np.array([-10.0], dtype=np.float32),
-        "xhlai": np.array([10.0], dtype=np.float32),
-        "tdew": np.array([20.0], dtype=np.float32),
-        "windht": np.array([5.0], dtype=np.float32),
-        "windrun": np.array([450.0], dtype=np.float32),
-        "xlat": np.array([45.0], dtype=np.float32),
-        "xelev": np.array([3000.0], dtype=np.float32),
-        "canht": np.array([2.0], dtype=np.float32),
+        "PETASCE_simple::petasce::doy::-1": np.array([20.0], dtype=np.float32),
+        "PETASCE_simple::petasce::meevp::-1": np.array(["A"], dtype=np.str),
+        "PETASCE_simple::petasce::msalb::-1": np.array(
+            [0.5], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::srad::-1": np.array(
+            [15.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::tmax::-1": np.array(
+            [10.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::tmin::-1": np.array(
+            [-10.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::xhlai::-1": np.array(
+            [10.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::tdew::-1": np.array(
+            [20.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::windht::-1": np.array(
+            [5.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::windrun::-1": np.array(
+            [450.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::xlat::-1": np.array(
+            [45.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::xelev::-1": np.array(
+            [3000.0], dtype=np.float32
+        ),
+        "PETASCE_simple::petasce::canht::-1": np.array(
+            [2.0], dtype=np.float32
+        ),
     }
-
     outputs = G(values)
     res = outputs["eo"][0]
     assert res == np.float(1.3980657068634232)
@@ -78,12 +107,24 @@ def test_pet_files():
 
 
 def test_single_file_analysis():
-    ITP = ImperativeInterpreter.from_src_file("tests/data/program_analysis/PETPNO.for")
-    petpno_con_id = GenericIdentifier.from_str("@container::PETPNO::@global::petpno")
-
-    PNO_GrFN = GroundedFunctionNetwork.from_AIR(
-        petpno_con_id, ITP.containers, ITP.variables, ITP.types, []
+    ITP = ImperativeInterpreter.from_src_file(
+        "tests/data/program_analysis/PETPNO.for"
     )
+    petpno_con_id = GenericIdentifier.from_str(
+        "@container::PETPNO::@global::petpno"
+    )
+
+    AIR = AutoMATES_IR(
+        petpno_con_id,
+        ITP.containers,
+        ITP.variables,
+        ITP.types,
+        [],
+        ITP.documentation,
+        [],
+    )
+
+    PNO_GrFN = GroundedFunctionNetwork.from_AIR(AIR)
     assert isinstance(PNO_GrFN, GroundedFunctionNetwork)
 
     A = PNO_GrFN.to_AGraph()
@@ -98,10 +139,20 @@ def test_file_with_loops():
     ITP = ImperativeInterpreter.from_src_file(
         "tests/data/program_analysis/SIR-Gillespie-SD.f"
     )
-    con_id = GenericIdentifier.from_str("@container::SIR-Gillespie-SD::@global::main")
-    G = GroundedFunctionNetwork.from_AIR(
-        con_id, ITP.containers, ITP.variables, ITP.types, []
+    con_id = GenericIdentifier.from_str(
+        "@container::SIR-Gillespie-SD::@global::main"
     )
+
+    AIR = AutoMATES_IR(
+        con_id,
+        ITP.containers,
+        ITP.variables,
+        ITP.types,
+        [],
+        ITP.documentation,
+        [],
+    )
+    G = GroundedFunctionNetwork.from_AIR(AIR)
     A = G.to_AGraph()
     A.draw("Gillespie-SD--GrFN.pdf", prog="dot")
     assert isinstance(G, GroundedFunctionNetwork)
@@ -112,12 +163,21 @@ def test_file_with_loops():
 
 
 def test_petpt():
-    ITP = ImperativeInterpreter.from_src_file("tests/data/program_analysis/PETPT.for")
-    con_id = GenericIdentifier.from_str("@container::PETPT::@global::petpt")
-
-    G = GroundedFunctionNetwork.from_AIR(
-        con_id, ITP.containers, ITP.variables, ITP.types, []
+    ITP = ImperativeInterpreter.from_src_file(
+        "tests/data/program_analysis/PETPT.for"
     )
+    con_id = GenericIdentifier.from_str("@container::PETPT::@global::petpt")
+    AIR = AutoMATES_IR(
+        con_id,
+        ITP.containers,
+        ITP.variables,
+        ITP.types,
+        [],
+        ITP.documentation,
+        [],
+    )
+
+    G = GroundedFunctionNetwork.from_AIR(AIR)
     assert isinstance(G, GroundedFunctionNetwork)
     A = G.to_AGraph()
     A.draw("PETPT--GrFN.pdf", prog="dot")
@@ -137,9 +197,18 @@ def test_crop_yield_creation():
     ITP = ImperativeInterpreter.from_src_file(
         "tests/data/program_analysis/crop_yield.f"
     )
-    con_id = GenericIdentifier.from_str("@container::crop_yield::@global::crop_yield")
-
-    G = GroundedFunctionNetwork.from_AIR(
-        con_id, ITP.containers, ITP.variables, ITP.types, []
+    con_id = GenericIdentifier.from_str(
+        "@container::crop_yield::@global::crop_yield"
     )
+    AIR = AutoMATES_IR(
+        con_id,
+        ITP.containers,
+        ITP.variables,
+        ITP.types,
+        [],
+        ITP.documentation,
+        [],
+    )
+
+    G = GroundedFunctionNetwork.from_AIR(AIR)
     assert isinstance(G, GroundedFunctionNetwork)
